@@ -515,78 +515,78 @@ void PrintRTData(bool includeLoop2Data)
 {
     int16_t i;
 
-    printf("%s = 0x%04x\n", _NEXT_RECORD, rcd.wNextRec );
+    printf("{\"%s\": \"0x%04x\",\n", _NEXT_RECORD, rcd.wNextRec );
     /* 3-hour rolling baro trend */
     i = rcd.cP;
-    printf("%s = ", _BARO_TREND);
+    printf("\"%s\": ", _BARO_TREND);
     switch(i) {
-        case -60: printf("Falling Rapidly\n"); break;
-        case -20: printf("Falling Slowly\n"); break;
-        case 0:   printf("Steady\n"); break;
-        case 20:  printf("Rising Slowly\n"); break;
-        case 60:  printf("Rising Rapidly\n"); break;
-        default:  printf("n/a-%d\n", rcd.cP);
+        case -60: printf("\"Falling Rapidly\",\n"); break;
+        case -20: printf("\"Falling Slowly\",\n"); break;
+        case 0:   printf("\"Steady\",\n"); break;
+        case 20:  printf("\"Rising Slowly\",\n"); break;
+        case 60:  printf("\"Rising Rapidly\",\n"); break;
+        default:  printf("\"n/a-%d\",\n", rcd.cP);
     }
-    printf("%s = ", _BARO_TREND_IMG);
+    printf("\"%s\": ", _BARO_TREND_IMG);
     switch(i) {
-        case -60: printf("baro_fr\n"); break;
-        case -20: printf("baro_fs\n"); break;
-        case 0:   printf("baro_s\n"); break;
-        case 20:  printf("baro_rs\n"); break;
-        case 60:  printf("baro_rr\n"); break;
-        default:  printf("baro_none\n");
+        case -60: printf("\"baro_fr\",\n"); break;
+        case -20: printf("\"baro_fs\",\n"); break;
+        case 0:   printf("\"baro_s\",\n"); break;
+        case 20:  printf("\"baro_rs\",\n"); break;
+        case 60:  printf("\"baro_rr\",\n"); break;
+        default:  printf("\"baro_none\",\n");
     }
-    printf("%s = %2.2f\n", _BARO_CURR, rcd.wBarometer / 1000.0 );
-    printf("%s = %.1f\n", _INSIDE_TEMP, ((int16_t)rcd.wInsideTemp) / 10.0 );
-    printf("%s = %d\n", _INSIDE_HUM, rcd.yInsideHum );
-    printf("%s = %.1f\n", _OUTSIDE_TEMP, ((int16_t)rcd.wOutsideTemp) / 10.0 );
-    printf("%s = %d\n", _WIND_SPEED, rcd.yWindSpeed );
+    printf("\"%s\": %2.2f,\n", _BARO_CURR, rcd.wBarometer / 1000.0 );
+    printf("\"%s\": %.1f,\n", _INSIDE_TEMP, ((((int16_t)rcd.wInsideTemp) / 10.0 ) - 32) * (5.0/9.0));
+    printf("\"%s\": %d,\n", _INSIDE_HUM, rcd.yInsideHum );
+    printf("\"%s\": %.1f,\n", _OUTSIDE_TEMP, ((((int16_t)rcd.wOutsideTemp) / 10.0 ) - 32) * (5.0/9.0));
+    printf("\"%s\": %d,\n", _WIND_SPEED, rcd.yWindSpeed );
     if (includeLoop2Data) {
-      printf("%s = %.1f\n", _WIND_AVG_SPEED, (double)rcd2.avgWindSpd10m / 10.0 );
+      printf("\"%s\": %.1f,\n", _WIND_AVG_SPEED, (double)rcd2.avgWindSpd10m / 10.0 );
     } else {
-      printf("%s = %d\n", _WIND_AVG_SPEED, rcd.yAvgWindSpeed );
+      printf("\"%s\": %d,\n", _WIND_AVG_SPEED, rcd.yAvgWindSpeed );
     }
-    if (includeLoop2Data) printf("%s = %.1f\n", _WIND_2M_AVG_SPEED, (double)rcd2.avgWindSpd2m / 10.0 );
-    printf("%s = %d\n", _WIND_DIR, rcd.wWindDir );
-    printf("%s = %s\n", _WIND_DIR_ROSE, getWindRose(rcd.wWindDir) );
-    if (includeLoop2Data) printf("%s = %d\n", _WIND_10M_GUST_SPEED, rcd2.windGust10m );
-    if (includeLoop2Data) printf("%s = %d\n", _WIND_10M_GUST_DIR, rcd2.windGust10mDir );
-    if (includeLoop2Data) printf("%s = %s\n", _WIND_10M_GUST_DIR_ROSE, getWindRose(rcd2.windGust10mDir) );
-    printf("%s = %d\n", _OUTSIDE_HUM, rcd.yOutsideHum );
-    printf("%s = %d\n", _RAIN_RATE, rcd.wRainRate );
-    printf("%s = %s\n", _IS_RAINING, rcd.wRainRate ? "yes" : "no");
-    printf("%s = ", _UV_LEVEL);
+    if (includeLoop2Data) printf("\"%s\": %.1f,\n", _WIND_2M_AVG_SPEED, (double)rcd2.avgWindSpd2m / 10.0 );
+    printf("\"%s\": %d,\n", _WIND_DIR, rcd.wWindDir );
+    printf("\"%s\": \"%s\",\n", _WIND_DIR_ROSE, getWindRose(rcd.wWindDir) );
+    if (includeLoop2Data) printf("\"%s\": %d,\n", _WIND_10M_GUST_SPEED, rcd2.windGust10m );
+    if (includeLoop2Data) printf("\"%s\": %d,\n", _WIND_10M_GUST_DIR, rcd2.windGust10mDir );
+    if (includeLoop2Data) printf("\"%s\": \"%s\",\n", _WIND_10M_GUST_DIR_ROSE, getWindRose(rcd2.windGust10mDir) );
+    printf("\"%s\": %d,\n", _OUTSIDE_HUM, rcd.yOutsideHum );
+    printf("\"%s\": %d,\n", _RAIN_RATE, rcd.wRainRate );
+    printf("\"%s\": \"%s\",\n", _IS_RAINING, rcd.wRainRate ? "yes" : "no");
+    printf("\"%s\": ", _UV_LEVEL);
     if(rcd.yUVLevel == 0xff)
-        printf("n/a\n");
+        printf("\"n/a\",\n");
     else
-        printf("%.1f\n", rcd.yUVLevel / 10.0 );
-    printf("%s = ", _SOLAR_RAD);
+        printf("%.1f,\n", rcd.yUVLevel / 10.0 );
+    printf("\"%s\": ", _SOLAR_RAD);
     if(rcd.wSolarRad == 32767)
-        printf("n/a\n");
+        printf("\"n/a\",\n");
     else
-        printf("%d\n", rcd.wSolarRad );
-    if (includeLoop2Data) printf("%s = %d\n", _HEAT_INDEX, rcd2.heatIndex );
-    if (includeLoop2Data) printf("%s = %d\n", _WIND_CHILL, rcd2.windChill );
-    if (includeLoop2Data) printf("%s = %d\n", _THSW_INDEX, rcd2.thswIndex );
-    printf("%s = %.2f\n", _RAIN_STORM, rcd.wStormRain / 100.0);
-    printf("%s = ", _STORM_START_DATE);
+        printf("%d,\n", rcd.wSolarRad );
+    if (includeLoop2Data) printf("\"%s\": %d,\n", _HEAT_INDEX, rcd2.heatIndex );
+    if (includeLoop2Data) printf("\"%s\": %d,\n", _WIND_CHILL, rcd2.windChill );
+    if (includeLoop2Data) printf("\"%s\": %d,\n", _THSW_INDEX, rcd2.thswIndex );
+    printf("\"%s\": %.2f,\n", _RAIN_STORM, rcd.wStormRain / 100.0);
+    printf("\"%s\": \"", _STORM_START_DATE);
     PrintDate(rcd.wStormStart);
-    printf("\n");
+    printf("\",\n");
 
-    if (includeLoop2Data) printf("%s = %.2f\n", _RAIN_LAST_15M, rcd2.last15mRain / 100.0);
-    if (includeLoop2Data) printf("%s = %.2f\n", _RAIN_LAST_HOUR, rcd2.lastHourRain / 100.0);
-    printf("%s = %d\n", _DAY_RAIN, rcd.wRainDay);
-    printf("%s = %d\n", _MONTH_RAIN, rcd.wRainMonth);
-    printf("%s = %d\n", _YEAR_RAIN, rcd.wRainYear);
-    printf("%s = %0.3f\n", _DAY_ET, rcd.wETDay / 1000.0);
-    printf("%s = %0.2f\n", _MONTH_ET, rcd.wETMonth / 100.0);
-    printf("%st = %d\n", _XMIT_BATT, rcd.yXmitBatt);
-    printf("%s = %.1f\n", _BATT_VOLTAGE, ((rcd.wBattLevel * 300)/512)/100.0);
-    printf("%s = %d\n", _FORE_ICON, rcd.yForeIcon);
-    printf("%s = %d\n", _FORE_RULE, rcd.yRule);
-    printf("%s = %s\n", _FORE_STRING, ForecastString(rcd.yRule));
-    printf("%s = %s\n", _SUNRISE, TimeConvert(rcd.wSunrise));
-    printf("%s = %s\n", _SUNSET, TimeConvert(rcd.wSunset));
+    if (includeLoop2Data) printf("\"%s\": %.2f,\n", _RAIN_LAST_15M, rcd2.last15mRain / 100.0);
+    if (includeLoop2Data) printf("\"%s\": %.2f,\n", _RAIN_LAST_HOUR, rcd2.lastHourRain / 100.0);
+    printf("\"%s\": %d,\n", _DAY_RAIN, rcd.wRainDay);
+    printf("\"%s\": %d,\n", _MONTH_RAIN, rcd.wRainMonth);
+    printf("\"%s\": %d,\n", _YEAR_RAIN, rcd.wRainYear);
+    printf("\"%s\": %0.3f,\n", _DAY_ET, rcd.wETDay / 1000.0);
+    printf("\"%s\": %0.2f,\n", _MONTH_ET, rcd.wETMonth / 100.0);
+    printf("\"%st\": %d,\n", _XMIT_BATT, rcd.yXmitBatt);
+    printf("\"%s\": %.1f,\n", _BATT_VOLTAGE, ((rcd.wBattLevel * 300)/512)/100.0);
+    printf("\"%s\": %d,\n", _FORE_ICON, rcd.yForeIcon);
+    printf("\"%s\": %d,\n", _FORE_RULE, rcd.yRule);
+    printf("\"%s\": \"%s\",\n", _FORE_STRING, ForecastString(rcd.yRule));
+    printf("\"%s\": \"%s\",\n", _SUNRISE, TimeConvert(rcd.wSunrise));
+    printf("\"%s\": \"%s\"}", _SUNSET, TimeConvert(rcd.wSunset));
 }
 
 

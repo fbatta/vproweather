@@ -1,0 +1,6 @@
+#!/bin/bash
+/usr/local/bin/vproweather -x /dev/ttyUSB0 > /tmp/weather_output_data.json
+cat /tmp/weather_output_data.json | curl -H "Content-type: application/json" \
+	-X POST -d "$(</dev/stdin)" \
+	-H "X-Api-Key: 4e954a46-ecdf-11ea-adc1-0242ac120002" \
+	https://rbyc.org.au/wp-json/rbyc-plugins/v1/uploadWeatherData
