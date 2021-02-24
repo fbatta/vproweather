@@ -115,10 +115,11 @@ function getFirmwareVersion() {
                     }
                     if (res.constructor === Buffer) {
                         console.log(`
-                        Data: ${res.toString()}
+                        Data: ${res.toString('hex')}
                         Length: ${res.length}
                         `);
                     }
+                    process.exit(0);
                 }, 1000);
             });
         });
