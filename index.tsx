@@ -9,7 +9,7 @@ function logError(content: string) {
     log(chalk`{redBright ${content}}`);
 }
 function logSuccess(content: string) {
-    log(chalk`{greenBright ${content}}`);
+    log(chalk`{green ${content}}`);
 }
 function logWarn(content: string) {
     log(chalk`{yellowBright ${content}}`);
@@ -149,7 +149,6 @@ function getModel() {
     if (verbose) {
         log(`Getting model...`);
         const buf = Buffer.from(`WRD\x12\x4d\n`, 'ascii');
-        console.log(buf);
         vpro.write(buf, (err) => {
             if (err) {
                 logError(`Failed to get firmware version`);
@@ -159,7 +158,6 @@ function getModel() {
             vpro.on('readable', () => {
                 setTimeout(() => {
                     const readBuf = vpro.read(4);
-                    console.log(readBuf);
                     if (readBuf && readBuf.constructor === Buffer) {
                         const modelCode = readBuf.readUInt8(3);
                         let model: string;
