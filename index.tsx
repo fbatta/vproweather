@@ -32,6 +32,17 @@ const READ_WRITE_BUF_LEN = 4200;
 let readBuffer: Buffer | undefined;
 let readBufferIdx: number;
 
+function trimBufferEnd(buf: Buffer): Buffer {
+    let idx = 0;
+    for (let i = buf.length - 1; i >= 0; i--) {
+        if (buf[i] !== 0x00) {
+            idx = i;
+            break;
+        }
+    }
+    return buf.slice(0, idx + 1);
+}
+
 /**
  * Read bytes from serial until buffer is empty, return true while characters are available
  */
@@ -46,7 +57,7 @@ function readAllIncomingBytes(): Buffer | boolean {
         readBufferIdx++;
         return true;
     }
-    const buf = Buffer.from(readBuffer);
+    const buf = trimBufferEnd(readBuffer);
     readBuffer = undefined;
     return buf;
 }
