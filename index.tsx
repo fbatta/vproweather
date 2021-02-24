@@ -158,10 +158,9 @@ function getModel() {
             vpro.drain();
             vpro.on('readable', () => {
                 setTimeout(() => {
-                    const readBuf = vpro.read();
-                    console.log(readBuf);
+                    const readBuf = vpro.read(1);
                     if (readBuf && readBuf.constructor === Buffer) {
-                        const modelCode = readBuf.readUInt8();
+                        const modelCode = readBuf.readInt16LE();
                         let model: string;
                         switch (modelCode) {
                             case 0: model = 'Wizard III'; break;
