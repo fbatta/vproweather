@@ -11,10 +11,10 @@ function logError(content) {
     log(chalk_1.default `{redBright ${content}}`);
 }
 function logSuccess(content) {
-    log(chalk_1.default `{greenBright${content}}`);
+    log(chalk_1.default `{greenBright ${content}}`);
 }
 function logWarn(content) {
-    log(chalk_1.default `{yellowBright${content}}`);
+    log(chalk_1.default `{yellowBright ${content}}`);
 }
 const CR = 0x0d;
 const LF = 0x0a;

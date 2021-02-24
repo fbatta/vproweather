@@ -10,10 +10,10 @@ function logError(content: string) {
     log(chalk`{redBright ${content}}`);
 }
 function logSuccess(content: string) {
-    log(chalk`{greenBright${content}}`);
+    log(chalk`{greenBright ${content}}`);
 }
 function logWarn(content: string) {
-    log(chalk`{yellowBright${content}}`);
+    log(chalk`{yellowBright ${content}}`);
 }
 
 const CR = 0x0d;
