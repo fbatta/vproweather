@@ -3,6 +3,7 @@ import * as boxen from "boxen";
 import yargs from "yargs/yargs";
 import SerialPort from "serialport";
 import { describe, string } from "yargs";
+import { read } from "fs/promises";
 
 const log = console.log;
 
@@ -32,9 +33,9 @@ let readBuffer: Buffer | undefined;
 let readBufferIdx: number;
 
 /**
- * Read bytes from serial until buffer is empty
+ * Read bytes from serial until buffer is empty, return true while characters are available
  */
-function readAllIncomingBytes(): Buffer {
+function readAllIncomingBytes(): Buffer | boolean {
     if (!readBuffer) {
         readBuffer = Buffer.alloc(READ_WRITE_BUF_LEN);
         readBufferIdx = 0;
@@ -43,7 +44,7 @@ function readAllIncomingBytes(): Buffer {
     if (nextChar && nextChar.constructor === Buffer) {
         nextChar.copy(readBuffer, readBufferIdx);
         readBufferIdx++;
-        readAllIncomingBytes();
+        return true;
     }
     const buf = Buffer.from(readBuffer);
     readBuffer = undefined;
@@ -108,11 +109,16 @@ function getFirmwareVersion() {
             vpro.drain();
             vpro.on('readable', () => {
                 setTimeout(() => {
-                    const buf = readAllIncomingBytes();
-                    console.log(`
-                    Data: ${buf.toString()}
-                    Length: ${buf.length}
-                    `);
+                    let res: Buffer | boolean = true;
+                    while (res === true) {
+                        res = readAllIncomingBytes();
+                    }
+                    if (res.constructor === Buffer) {
+                        console.log(`
+                        Data: ${res.toString()}
+                        Length: ${res.length}
+                        `);
+                    }
                 }, 1000);
             });
         });

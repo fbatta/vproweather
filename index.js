@@ -30,7 +30,7 @@ const READ_WRITE_BUF_LEN = 4200;
 let readBuffer;
 let readBufferIdx;
 /**
- * Read bytes from serial until buffer is empty
+ * Read bytes from serial until buffer is empty, return true while characters are available
  */
 function readAllIncomingBytes() {
     if (!readBuffer) {
@@ -41,7 +41,7 @@ function readAllIncomingBytes() {
     if (nextChar && nextChar.constructor === Buffer) {
         nextChar.copy(readBuffer, readBufferIdx);
         readBufferIdx++;
-        readAllIncomingBytes();
+        return true;
     }
     const buf = Buffer.from(readBuffer);
     readBuffer = undefined;
@@ -103,11 +103,16 @@ function getFirmwareVersion() {
             vpro.drain();
             vpro.on('readable', () => {
                 setTimeout(() => {
-                    const buf = readAllIncomingBytes();
-                    console.log(`
-                    Data: ${buf.toString()}
-                    Length: ${buf.length}
-                    `);
+                    let res = true;
+                    while (res === true) {
+                        res = readAllIncomingBytes();
+                    }
+                    if (res.constructor === Buffer) {
+                        console.log(`
+                        Data: ${res.toString()}
+                        Length: ${res.length}
+                        `);
+                    }
                 }, 1000);
             });
         });
