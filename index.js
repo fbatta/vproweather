@@ -136,6 +136,9 @@ function getFirmwareVersion() {
         });
     }
 }
+/**
+ * Get display model
+ */
 function getModel() {
     if (verbose) {
         log(`Getting model...`);
@@ -185,7 +188,7 @@ function getModel() {
                         logSuccess(`Display model: ${model}`);
                     }
                     process.exit(0);
-                }, 1000);
+                }, 2000);
             });
         });
     }
@@ -220,7 +223,7 @@ const argv = yargs_1.default(process.argv.slice(2))
 })
     .describe('version', "Show version number")
     .help().argv;
-const { p: port, verbose, fw, bk: backlight, m: model } = argv;
+const { p: port, verbose, f: firmware, bk: backlight, m: model } = argv;
 const vpro = new serialport_1.default(port, {
     baudRate: 19200,
 });
@@ -230,7 +233,7 @@ vpro.on('open', async () => {
     }
     // wake up station
     await wakeUpStation();
-    if (fw) {
+    if (firmware) {
         getFirmwareVersion();
     }
     else if (backlight !== undefined) {
