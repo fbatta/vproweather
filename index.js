@@ -29,6 +29,11 @@ const ESC_STR = "\x1b";
 const READ_WRITE_BUF_LEN = 4200;
 let readBuffer;
 let readBufferIdx;
+/**
+ * Remove trailing 0x00 from a buffer
+ *
+ * @param buf source buffer
+ */
 function trimBufferEnd(buf) {
     let idx = 0;
     for (let i = buf.length - 1; i >= 0; i--) {
@@ -59,7 +64,6 @@ function readAllIncomingBytes() {
 }
 /**
  * Wakes up the weather station per the Davis specs
- *
  */
 async function wakeUpStation() {
     return new Promise((resolve, reject) => {
@@ -132,6 +136,59 @@ function getFirmwareVersion() {
         });
     }
 }
+function getModel() {
+    if (verbose) {
+        log(`Getting model...`);
+        const buf = Buffer.from(`WRD${0x12}${0x4d}\n`, 'ascii');
+        vpro.write(buf, (err) => {
+            if (err) {
+                logError(`Failed to get firmware version`);
+                return;
+            }
+            vpro.drain();
+            vpro.on('readable', () => {
+                setTimeout(() => {
+                    const readBuf = vpro.read();
+                    if (readBuf && readBuf.constructor === Buffer) {
+                        const modelCode = readBuf.readUInt8();
+                        let model;
+                        switch (modelCode) {
+                            case 0:
+                                model = 'Wizard III';
+                                break;
+                            case 1:
+                                model = 'Wizard II';
+                                break;
+                            case 2:
+                                model = 'Monitor';
+                                break;
+                            case 3:
+                                model = 'Perception';
+                                break;
+                            case 4:
+                                model = 'GroWeather';
+                                break;
+                            case 5:
+                                model = 'Energy Environmonitor';
+                                break;
+                            case 6:
+                                model = 'Health Environmonitor';
+                                break;
+                            case 16:
+                                model = 'Vantage Pro';
+                                break;
+                            default:
+                                model = 'Unknown model';
+                                break;
+                        }
+                        logSuccess(`Display model: ${model}`);
+                    }
+                    process.exit(0);
+                }, 1000);
+            });
+        });
+    }
+}
 const argv = yargs_1.default(process.argv.slice(2))
     .scriptName('vproweather')
     .usage('$0 <cmd> [args]')
@@ -146,19 +203,23 @@ const argv = yargs_1.default(process.argv.slice(2))
     describe: 'Show verbose output',
     type: 'boolean'
 })
-    .option('bk', {
+    .option('b', {
     alias: 'set-backlight',
     describe: 'turn backlight on/off',
     type: 'number',
     nargs: 1,
 })
-    .option('fw', {
+    .option('f', {
     alias: 'firmware-version',
     describe: 'Query for Davis firmware version string',
 })
+    .option('m', {
+    alias: 'model',
+    describe: 'Query for weather station model',
+})
     .describe('version', "Show version number")
     .help().argv;
-const { p: port, verbose, fw, bk: backlight } = argv;
+const { p: port, verbose, fw, bk: backlight, m: model } = argv;
 const vpro = new serialport_1.default(port, {
     baudRate: 19200,
 });
@@ -171,12 +232,15 @@ vpro.on('open', async () => {
     if (fw) {
         getFirmwareVersion();
     }
-    if (backlight !== undefined) {
+    else if (backlight !== undefined) {
         if (backlight === 0) {
             switchBacklight(false);
         }
         else {
             switchBacklight(true);
         }
+    }
+    else if (model) {
+        getModel();
     }
 });
