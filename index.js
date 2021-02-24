@@ -155,7 +155,7 @@ const argv = yargs_1.default(process.argv.slice(2))
 })
     .describe('version', "Show version number")
     .help().argv;
-const { p: port, verbose, fw } = argv;
+const { p: port, verbose, fw, bk: backlight } = argv;
 const vpro = new serialport_1.default(port, {
     baudRate: 19200,
 });
@@ -167,5 +167,13 @@ vpro.on('open', async () => {
     await wakeUpStation();
     if (fw) {
         getFirmwareVersion();
+    }
+    if (backlight) {
+        if (backlight === 0) {
+            switchBacklight(false);
+        }
+        else {
+            switchBacklight(true);
+        }
     }
 });
