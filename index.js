@@ -142,7 +142,7 @@ function getFirmwareVersion() {
 function getModel() {
     if (verbose) {
         log(`Getting model...`);
-        const buf = Buffer.from(`WRD${0x12}${0x4d}\n`, 'ascii');
+        const buf = Buffer.from(`WRD\x12\x4d\n`, 'ascii');
         console.log(buf);
         vpro.write(buf, (err) => {
             if (err) {
