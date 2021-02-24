@@ -149,6 +149,7 @@ function getModel() {
             vpro.on('readable', () => {
                 setTimeout(() => {
                     const readBuf = vpro.read();
+                    console.log(readBuf);
                     if (readBuf && readBuf.constructor === Buffer) {
                         const modelCode = readBuf.readUInt8();
                         let model;
