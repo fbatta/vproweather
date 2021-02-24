@@ -111,7 +111,7 @@ function switchBacklight(turnOn) {
 function getFirmwareVersion() {
     if (verbose) {
         log(`Getting firmware version...`);
-        const buf = Buffer.from(`WRD${0x12}${0x4d}\n`, 'ascii');
+        const buf = Buffer.from(`VER\n`, 'ascii');
         vpro.write(buf, (err) => {
             if (err) {
                 logError(`Failed to get firmware version`);
