@@ -132,6 +132,11 @@ const vpro = new SerialPort(port, {
 });
 
 vpro.on('open', () => {
+    if (verbose) {
+        log(logSuccess(`Serial port opened`));
+    }
+    // wake up station
+    wakeUpStation(1);
     if (fw) {
         getFirmwareVersion();
     }
