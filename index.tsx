@@ -27,10 +27,14 @@ const CANCEL_STR = "\x18";
 const ESC = 0x1b;
 const ESC_STR = "\x1b";
 const READ_WRITE_BUF_LEN = 4200;
-let readBuffer: Buffer;
+
+let readBuffer: Buffer | undefined;
 let readBufferIdx: number;
 
-function readAllIncomingBytes() {
+/**
+ * Read bytes from serial until buffer is empty
+ */
+function readAllIncomingBytes(): Buffer {
     if (!readBuffer) {
         readBuffer = Buffer.alloc(READ_WRITE_BUF_LEN);
         readBufferIdx = 0;
@@ -41,6 +45,9 @@ function readAllIncomingBytes() {
         readBufferIdx++;
         readAllIncomingBytes();
     }
+    const buf = Buffer.from(readBuffer);
+    readBuffer = undefined;
+    return buf;
 }
 
 /**
@@ -86,6 +93,9 @@ function switchBacklight(turnOn: boolean) {
     })
 }
 
+/**
+ * Get display firmware version
+ */
 function getFirmwareVersion() {
     if (verbose) {
         log(`Getting firmware version...`);
@@ -98,8 +108,11 @@ function getFirmwareVersion() {
             vpro.drain();
             vpro.on('readable', () => {
                 setTimeout(() => {
-                    readAllIncomingBytes();
-                    console.log(`Data: ${readBuffer.toString()}`);
+                    const buf = readAllIncomingBytes();
+                    console.log(`
+                    Data: ${buf.toString()}
+                    Length: ${buf.length}
+                    `);
                 }, 1000);
             });
         });

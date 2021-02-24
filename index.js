@@ -29,6 +29,9 @@ const ESC_STR = "\x1b";
 const READ_WRITE_BUF_LEN = 4200;
 let readBuffer;
 let readBufferIdx;
+/**
+ * Read bytes from serial until buffer is empty
+ */
 function readAllIncomingBytes() {
     if (!readBuffer) {
         readBuffer = Buffer.alloc(READ_WRITE_BUF_LEN);
@@ -40,6 +43,9 @@ function readAllIncomingBytes() {
         readBufferIdx++;
         readAllIncomingBytes();
     }
+    const buf = Buffer.from(readBuffer);
+    readBuffer = undefined;
+    return buf;
 }
 /**
  * Wakes up the weather station per the Davis specs
@@ -82,6 +88,9 @@ function switchBacklight(turnOn) {
         }
     });
 }
+/**
+ * Get display firmware version
+ */
 function getFirmwareVersion() {
     if (verbose) {
         log(`Getting firmware version...`);
@@ -94,8 +103,11 @@ function getFirmwareVersion() {
             vpro.drain();
             vpro.on('readable', () => {
                 setTimeout(() => {
-                    readAllIncomingBytes();
-                    console.log(`Data: ${readBuffer.toString()}`);
+                    const buf = readAllIncomingBytes();
+                    console.log(`
+                    Data: ${buf.toString()}
+                    Length: ${buf.length}
+                    `);
                 }, 1000);
             });
         });
