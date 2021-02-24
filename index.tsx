@@ -5,7 +5,16 @@ import SerialPort from "serialport";
 import { describe, string } from "yargs";
 
 const log = console.log;
-const { redBright: logError, greenBright: logSuccess, yellowBright: logWarn } = chalk;
+
+function logError(content: string) {
+    log(chalk.redBright(content));
+}
+function logSuccess(content: string) {
+    log(chalk.greenBright(content));
+}
+function logWarn(content: string) {
+    log(chalk.yellowBright(content));
+}
 
 const CR = 0x0d;
 const LF = 0x0a;
@@ -37,23 +46,22 @@ function readAllIncomingBytes() {
 /**
  * Wakes up the weather station per the Davis specs
  * 
- * @param attempt the current attempt at waking up the station
  */
-function wakeUpStation(attempt: number) {
-    const maxAttempts = 3;
-    if (attempt < maxAttempts) {
+async function wakeUpStation(): Promise<void> {
+    return new Promise((resolve, reject) => {
         vpro.write('\r', (err) => {
-            if (err && attempt < maxAttempts) {
-                wakeUpStation(attempt + 1);
-                return;
+            if (err) {
+                if (verbose) {
+                    logError(`Could not wake up weather station`);
+                }
+                reject();
             }
             if (verbose) {
-                log(logSuccess(`Woke up weather station in ${attempt} attempt(s)`));
+                logSuccess(`Woke up weather station`);
             }
+            resolve();
         });
-        return;
-    }
-    log(logError(`Could not wake up weather station`));
+    });
 }
 
 /**
@@ -68,12 +76,12 @@ function switchBacklight(turnOn: boolean) {
     const buf = Buffer.from(`LAMPS ${turnOn ? '1' : '0'}\n`, 'ascii');
     vpro.write(buf, (err) => {
         if (err) {
-            log(logError(`Failed to turn backlight ${turnOn ? 'on' : 'off'}`));
+            logError(`Failed to turn backlight ${turnOn ? 'on' : 'off'}`);
             return;
         }
         vpro.drain();
         if (verbose) {
-            log(logSuccess(`Turned backlight ${turnOn ? 'on' : 'off'}`));
+            logSuccess(`Turned backlight ${turnOn ? 'on' : 'off'}`);
         }
     })
 }
@@ -84,7 +92,7 @@ function getFirmwareVersion() {
         const buf = Buffer.from(`WRD${0x12}${0x4d}\n`, 'ascii');
         vpro.write(buf, (err) => {
             if (err) {
-                log(logError(`Failed to get firmware version`));
+                logError(`Failed to get firmware version`);
                 return;
             }
             vpro.drain();
@@ -131,12 +139,12 @@ const vpro = new SerialPort(port, {
     baudRate: 19200,
 });
 
-vpro.on('open', () => {
+vpro.on('open', async () => {
     if (verbose) {
-        log(logSuccess(`Serial port opened`));
+        logSuccess(`Serial port opened`);
     }
     // wake up station
-    wakeUpStation(1);
+    await wakeUpStation();
     if (fw) {
         getFirmwareVersion();
     }
