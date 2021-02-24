@@ -160,7 +160,7 @@ function getModel() {
                 setTimeout(() => {
                     const readBuf = vpro.read(1);
                     if (readBuf && readBuf.constructor === Buffer) {
-                        const modelCode = readBuf.readInt16LE();
+                        const modelCode = readBuf.readUInt8();
                         let model: string;
                         switch (modelCode) {
                             case 0: model = 'Wizard III'; break;
