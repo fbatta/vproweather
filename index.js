@@ -73,7 +73,10 @@ async function wakeUpStation() {
             if (verbose) {
                 logSuccess(`Woke up weather station`);
             }
-            resolve();
+            vpro.drain();
+            setTimeout(() => {
+                resolve();
+            }, 200);
         });
     });
 }
@@ -168,7 +171,7 @@ vpro.on('open', async () => {
     if (fw) {
         getFirmwareVersion();
     }
-    if (backlight) {
+    if (backlight !== undefined) {
         if (backlight === 0) {
             switchBacklight(false);
         }
